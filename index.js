@@ -3,10 +3,6 @@
 
 
 const FPS = 30;
-//const SHIP_SIZE = 30;
-//const TURN_SPEED = 360;
-//const SHIP_THRUST = 2;
-//const FRICTION_COEFF = 0.7;
 const BODY_WIDTH = 3;
 
 let can = document.getElementById("gameCanvas");
@@ -51,27 +47,31 @@ class Person{
         let neckLength = 70;
         let armLength = 100;
         let legLength = 100;
-        let bodyLength = 200;
+        let bodyLength = 150;
+        let legSpeed = .025;
 
         if(this._running === true){
 
-            if(this._leftFoot >= .5 || this._leftFoot <= .25) this._leftDirection = !this._leftDirection;
+            if(this._leftFoot >= .75 || this._leftFoot <= .25) {
+                this._leftDirection = !this._leftDirection;
+                
+            }
 
             if(this._leftDirection) {
-                this._leftFoot += .5 / FPS;
+                this._leftFoot += legSpeed;
             }
             else {
-                this._leftFoot -= .5 / FPS;
+                this._leftFoot -= legSpeed;
             }
 
 
-            if(this._rightFoot >= .75 || this._rightFoot <= .5) this._rightDirection = !this._rightDirection;
+            if(this._rightFoot >= .75 || this._rightFoot <= .25) this._rightDirection = !this._rightDirection;
 
             if(this._rightDirection) {
-                this._rightFoot -= .5 / FPS;
+                this._rightFoot -= legSpeed;
             }
             else {
-                this._rightFoot += .5 / FPS;
+                this._rightFoot += legSpeed;
             }
 
 
@@ -162,12 +162,13 @@ class Person{
 }
 
 class Dash{
-    constructor(x, y, width, height, color){
+    constructor(x, y, width, height, color, ahead = null){
         this._x = x;
         this._y = y; 
         this._width = width;
         this._height = height
         this._color = color;
+        this._ahead = ahead;
     }
 
     draw(){
@@ -175,9 +176,12 @@ class Dash{
         ctx.fillRect(this._x, this._y, this._width, this._height);
     }
 
-    move(velocity){
+    move(velocity, prev = null){
         if(this._x === -this._width){
-            this._x = can.width;
+            if(this._ahead === null){
+                if(prev === null) this._x = can.width;
+                else this._x = prev._x + 300;
+            }else this._x = this._ahead._x + 300;
         }else this._x -= velocity / FPS;
         //this._x -= velocity / FPS;
     }
@@ -215,18 +219,6 @@ class Cloud{
 }
 
 
-
-// let ship = {
-//     x: can.width / 2,
-//     y: can.height / 2,
-//     r: SHIP_SIZE / 2,
-//     heading: 90 / 180 * Math.PI,
-//     rotation: 0,
-//     thrusting: false,
-//     thrust: {x: 0, y: 0}
-
-// }
-
 // let image = new Image()
 // image.src = "../eddy.jpg";
 // image.onload = function(){ctx.drawImage(image, 50, 50)}
@@ -236,9 +228,11 @@ eddy._image.onload
 eddy.draw(0, 0, 300, 500, 2, 2);
 
 let dash1 = new Dash(0, can.height / 1.5 + can.height / 12, 150, 20, "yellow");
-let dash2 = new Dash(300, can.height / 1.5 + can.height / 12, 150, 20, "yellow");
-let dash3 = new Dash(600, can.height / 1.5 + can.height / 12, 150, 20, "yellow");
-let dash4 = new Dash(900, can.height / 1.5 + can.height / 12, 150, 20, "yellow");
+let dash2 = new Dash(300, can.height / 1.5 + can.height / 12, 150, 20, "yellow", dash1);
+let dash3 = new Dash(600, can.height / 1.5 + can.height / 12, 150, 20, "yellow", dash2);
+let dash4 = new Dash(900, can.height / 1.5 + can.height / 12, 150, 20, "yellow", dash3);
+let dash5 = new Dash(1200, can.height / 1.5 + can.height / 12, 150, 20, "yellow", dash4);
+let dash6 = new Dash(1500, can.height / 1.5 + can.height / 12, 150, 20, "yellow", dash5);
 
 let cloud1 = new Cloud(600, can.height / 3, 20, "white");
 
@@ -246,7 +240,7 @@ document.addEventListener("keydown", keydown);
 document.addEventListener("keyup", keyup);
 
 function keydown(/** @type {keyboarkdEvent}*/ev){
-    //console.log(eddy._image.src);
+    
     switch(ev.keyCode){
         case 37: //Left Arrow
             break;
@@ -255,12 +249,11 @@ function keydown(/** @type {keyboarkdEvent}*/ev){
         case 39: //Right Arrow
         eddy._running = true;
         console.log(eddy._leftFoot);
-                break;
+            break;
 
     }
 }
 function keyup(/** @type {keyboarkdEvent}*/ ev){
-    //console.log(ev);
     switch(ev.keyCode){
         case 37: //Left Arrow
             break;
@@ -268,7 +261,7 @@ function keyup(/** @type {keyboarkdEvent}*/ ev){
             break;
         case 39: //Right Arrow
         eddy._running = false;
-                break;
+            break;
 
     }
 }
@@ -286,15 +279,23 @@ function update(){
     ctx.fillRect(0, can.height / 1.5, can.width, can.height / 6);
 
     //let dash1 = new Dash(0, can.height / 1.5 + can.height / 12, 150, 20, "yellow");
+    if(eddy._running){
+        dash1.move(60, dash6);
+        dash2.move(60);
+        dash3.move(60);
+        dash4.move(60);
+        dash5.move(60);
+        dash6.move(60);
 
-    dash1.move(60);
-    dash2.move(60);
-    dash3.move(60);
-    dash4.move(60);
+    }
+
+    
     dash1.draw();
     dash2.draw();
     dash3.draw();
     dash4.draw();
+    dash5.draw();
+    dash6.draw();
     cloud1.draw();
 
     // ctx.fillStyle = "yellow";
