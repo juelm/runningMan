@@ -27,6 +27,10 @@ class Person{
         this._leftKnee = .25;
         this._rightKnee = .75;
         this._rightFoot = .75;
+        this._leftShoulder = .25;
+        this._leftElbow = .75;
+        this._rightShoulder = .75;
+        this._rightElbow = .25;
         this._leftDirection = true;
         this._rightDirection = true;
 
@@ -46,15 +50,19 @@ class Person{
     draw(left, top, width, height, scaleX, scaleY){
 
         let bodyWidth = 3;
-        let neckLength = 70;
-        let armLength = 100;
+        let neckLength = 30;
+        let armLength = 80;
         //let lowerArm = 100;
         let legLength = 80;
+
         //let lowerLeg = 100;
         let bodyLength = 100;
         let legSpeed = .025;
 
         if(this._running === true){
+
+            this._rightElbow = 1.75;
+            this._leftElbow = 1.75;
 
             this._leftKnee = .75;
 
@@ -65,12 +73,14 @@ class Person{
 
             if(this._leftDirection) {
                 this._leftFoot += legSpeed;
+                this._leftShoulder += legSpeed;
                 // if(this._leftFoot > .5){
                 //     this._leftKnee += legSpeed;
                 // }
             }
             else {
                 this._leftFoot -= legSpeed;
+                this._leftShoulder -= legSpeed;
             }
 
 
@@ -78,10 +88,17 @@ class Person{
 
             if(this._rightDirection) {
                 this._rightFoot -= legSpeed;
+                this._rightShoulder -= legSpeed;
             }
             else {
                 this._rightFoot += legSpeed;
+                this._rightShoulder += legSpeed;
             }
+
+            // if(this._leftShoulder >= .75 || this._leftShoulder <= .25) {
+            //     this._leftDirection = !this._leftDirection;
+                
+            // }
 
 
         }else{
@@ -89,6 +106,11 @@ class Person{
             this._leftKnee = .25;
             this._rightFoot = .75;
             this._rightKnee = .75;
+            this._leftShoulder = .25;
+            this._leftElbow = .75;
+            this._rightShoulder = .75;
+            this._rightElbow = .25;
+            
         }
 
         //draw head
@@ -121,12 +143,15 @@ class Person{
             );
 
         previousX = currentX;
-        previousY = currentY + neckLength;
+        previousY = currentY;
 
         ctx.lineTo(      
-            currentX + armLength * Math.cos(1.75 * Math.PI),
-            currentY + armLength * Math.sin(1.75 * Math.PI),
+            currentX + armLength * Math.cos(this._rightShoulder * Math.PI),
+            currentY + armLength * Math.sin(this._rightShoulder * Math.PI),
             );
+
+        currentX = currentX + armLength * Math.cos(this._rightShoulder * Math.PI);
+        currentY = currentY + armLength * Math.sin(this._rightShoulder * Math.PI),
 
         ctx.moveTo(
             currentX,
@@ -134,9 +159,40 @@ class Person{
             );
 
         ctx.lineTo(      
-            currentX + armLength * Math.cos(1.25 * Math.PI),
-            currentY + armLength * Math.sin(1.25 * Math.PI),
+            currentX + armLength * Math.cos(this._rightElbow * Math.PI),
+            currentY + armLength * Math.sin(this._rightElbow * Math.PI),
+            );           
+
+
+        currentX = previousX;
+        currentY = previousY;
+
+        ctx.moveTo(
+            currentX,
+            currentY
             );
+
+        ctx.lineTo(      
+            currentX + armLength * Math.cos(this._leftShoulder * Math.PI),
+            currentY + armLength * Math.sin(this._leftShoulder * Math.PI),
+            );
+
+        currentX = currentX + armLength * Math.cos(this._leftShoulder * Math.PI);
+        currentY = currentY + armLength * Math.sin(this._leftShoulder * Math.PI),
+
+        ctx.moveTo(
+            currentX,
+            currentY
+            );   
+            
+        ctx.lineTo(      
+            currentX + armLength * Math.cos(this._leftElbow * Math.PI),
+            currentY + armLength * Math.sin(this._leftElbow * Math.PI),
+            );
+
+
+        currentX = previousX;
+        currentY = previousY;
 
         ctx.moveTo(
             currentX,
@@ -266,7 +322,7 @@ class Cloud{
 // image.src = "../eddy.jpg";
 // image.onload = function(){ctx.drawImage(image, 50, 50)}
 
-let eddy = new Person("../eddy.jpg", 100, 150);
+let eddy = new Person("../eddy.jpg", 100, 200);
 eddy._image.onload
 eddy.draw(0, 0, 300, 500, 2, 2);
 
