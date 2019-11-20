@@ -23,7 +23,9 @@ class Person{
         this._x = x;
         this._y = y;
         this._running = false;
-        this._leftFoot = .25
+        this._leftFoot = .25;
+        this._leftKnee = .25;
+        this._rightKnee = .75;
         this._rightFoot = .75;
         this._leftDirection = true;
         this._rightDirection = true;
@@ -46,11 +48,15 @@ class Person{
         let bodyWidth = 3;
         let neckLength = 70;
         let armLength = 100;
-        let legLength = 100;
-        let bodyLength = 150;
+        //let lowerArm = 100;
+        let legLength = 80;
+        //let lowerLeg = 100;
+        let bodyLength = 100;
         let legSpeed = .025;
 
         if(this._running === true){
+
+            this._leftKnee = .75;
 
             if(this._leftFoot >= .75 || this._leftFoot <= .25) {
                 this._leftDirection = !this._leftDirection;
@@ -59,6 +65,9 @@ class Person{
 
             if(this._leftDirection) {
                 this._leftFoot += legSpeed;
+                // if(this._leftFoot > .5){
+                //     this._leftKnee += legSpeed;
+                // }
             }
             else {
                 this._leftFoot -= legSpeed;
@@ -77,7 +86,9 @@ class Person{
 
         }else{
             this._leftFoot = .25;
+            this._leftKnee = .25;
             this._rightFoot = .75;
+            this._rightKnee = .75;
         }
 
         //draw head
@@ -138,12 +149,31 @@ class Person{
             currentY + bodyLength
             );
         
-        currentY =  currentY + bodyLength 
+        currentY =  currentY + bodyLength;
+        previousY = currentY;
+        previousX = currentX;
 
         ctx.lineTo(      
             currentX + legLength * Math.cos(this._rightFoot * Math.PI),
             currentY + legLength * Math.sin(this._rightFoot * Math.PI),
             );
+
+        currentX = currentX + legLength * Math.cos(this._rightFoot * Math.PI);
+        currentY = currentY + legLength * Math.sin(this._rightFoot * Math.PI);
+
+
+        ctx.moveTo(
+            currentX,
+            currentY
+            );
+
+        ctx.lineTo(      
+            currentX + legLength * Math.cos(this._rightKnee * Math.PI),
+            currentY + legLength * Math.sin(this._rightKnee * Math.PI),
+            );
+
+        currentX = previousX;
+        currentY = previousY;
 
         ctx.moveTo(
             currentX,
@@ -153,6 +183,19 @@ class Person{
         ctx.lineTo(      
             currentX + legLength * Math.cos(this._leftFoot * Math.PI),
             currentY + legLength * Math.sin(this._leftFoot * Math.PI),
+            );
+
+        currentX = currentX + legLength * Math.cos(this._leftFoot * Math.PI);
+        currentY = currentY + legLength * Math.sin(this._leftFoot * Math.PI);
+
+        ctx.moveTo(
+            currentX,
+            currentY
+            );
+
+        ctx.lineTo(      
+            currentX + legLength * Math.cos(this._leftKnee * Math.PI),
+            currentY + legLength * Math.sin(this._leftKnee * Math.PI),
             );
         
 
@@ -223,7 +266,7 @@ class Cloud{
 // image.src = "../eddy.jpg";
 // image.onload = function(){ctx.drawImage(image, 50, 50)}
 
-let eddy = new Person("../eddy.jpg", 100, 100);
+let eddy = new Person("../eddy.jpg", 100, 150);
 eddy._image.onload
 eddy.draw(0, 0, 300, 500, 2, 2);
 
