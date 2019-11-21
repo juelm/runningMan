@@ -44,6 +44,8 @@ class Person{
         sadImage.onload = function(){ctx.drawImage(sadImage, x, y)}
         
         this._image = image;
+        this.happyImage = image;
+        this.sadImage = sadImage;
         
     }
 
@@ -390,7 +392,7 @@ class Cloud{
 // image.src = "../eddy.jpg";
 // image.onload = function(){ctx.drawImage(image, 50, 50)}
 
-let eddy = new Person("../eddy.jpg", 100, 200);
+let eddy = new Person("../eddy.jpg", 100, 200, "../unhappyEddy.jpg");
 eddy._image.onload
 eddy.draw(0, 0, 300, 500, 2, 2);
 
@@ -498,6 +500,7 @@ function update(){
 
 
     eddy.draw(0, 0, 300, 500, 2, 2);
+    //eddy.draw(0, 0, 300, 500, .5, .5);
 
 
 }
