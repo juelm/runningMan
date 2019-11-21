@@ -4,6 +4,9 @@
 
 const FPS = 30;
 const BODY_WIDTH = 3;
+const CLOUD_SPEED = 60;
+const DASH_SPEED = 100;
+const APPENDAGE_SPEED = .025;
 
 let can = document.getElementById("gameCanvas");
 let ctx = can.getContext("2d");
@@ -44,8 +47,6 @@ class Person{
         sadImage.onload = function(){ctx.drawImage(sadImage, x, y)}
         
         this._image = image;
-        this.happyImage = image;
-        this.sadImage = sadImage;
         
     }
 
@@ -64,7 +65,7 @@ class Person{
 
         //let lowerLeg = 100;
         let bodyLength = 100;
-        let legSpeed = .025;
+        let legSpeed = APPENDAGE_SPEED;
 
         if(this._running === true){
 
@@ -283,7 +284,7 @@ class Dash{
     }
 
     move(velocity, prev = null){
-        if(this._x === -this._width){
+        if(this._x <= -this._width){
             if(this._ahead === null){
                 if(prev === null) this._x = can.width;
                 else this._x = prev._x + 300;
@@ -378,6 +379,9 @@ class Cloud{
 
         if(this._x <= -this._radius * 3){
             this._x = can.width + this._radius * 5;
+            this._y = can.height / (2.5 + Math.random() * 8);
+            this._shape = Math.floor(Math.random() * 4);
+            this._radius = 20 + Math.floor(Math.random() * 5)
         }else this._x -= velocity / FPS;
 
         // if(this._x <= -this._width){
@@ -406,6 +410,8 @@ let dash6 = new Dash(1500, can.height / 1.5 + can.height / 12, 150, 20, "yellow"
 let cloud1 = new Cloud(300, can.height / 8, 20, "white");
 let cloud2 = new Cloud(600, can.height / 3, 23, "white");
 let cloud3 = new Cloud(900, can.height / 6, 20, "white");
+let cloud4 = new Cloud(1200, can.height / 6, 20, "white");
+let cloud5 = new Cloud(1500, can.height / 6, 20, "white");
 
 
 document.addEventListener("keydown", keydown);
@@ -452,15 +458,17 @@ function update(){
 
     //let dash1 = new Dash(0, can.height / 1.5 + can.height / 12, 150, 20, "yellow");
     if(eddy._running){
-        dash1.move(60, dash6);
-        dash2.move(60);
-        dash3.move(60);
-        dash4.move(60);
-        dash5.move(60);
-        dash6.move(60);
-        cloud1.move(10);
-        cloud2.move(10);
-        cloud3.move(10);
+        dash1.move(DASH_SPEED, dash6);
+        dash2.move(DASH_SPEED);
+        dash3.move(DASH_SPEED);
+        dash4.move(DASH_SPEED);
+        dash5.move(DASH_SPEED);
+        dash6.move(DASH_SPEED);
+        cloud1.move(CLOUD_SPEED);
+        cloud2.move(CLOUD_SPEED);
+        cloud3.move(CLOUD_SPEED);
+        cloud4.move(CLOUD_SPEED);
+        cloud5.move(CLOUD_SPEED);
 
     }
 
@@ -474,6 +482,8 @@ function update(){
     cloud1.draw();
     cloud2.draw();
     cloud3.draw();
+    cloud4.draw();
+    cloud5.draw();
 
     // ctx.fillStyle = "yellow";
     // ctx.fillRect(0, can.height / 1.5 + can.height / 12, 150, 20);
@@ -499,8 +509,8 @@ function update(){
     ctx.fill()
 
 
+    // eddy.draw(0, 0, 300, 500, 2, 2);
     eddy.draw(0, 0, 300, 500, 2, 2);
-    //eddy.draw(0, 0, 300, 500, .5, .5);
 
 
 }
