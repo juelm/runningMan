@@ -6,6 +6,9 @@ const CLOUD_SPEED = 40;
 const TOPO_SPEED = 40;
 const DASH_SPEED = 100;
 const APPENDAGE_SPEED = .035;
+const GRAVITY = 10;
+let JUMP_FRAMES = 0;
+const JUMP_VELOCITY = 60;
 
 
 let can = document.getElementById("gameCanvas");
@@ -39,6 +42,8 @@ class Person{
         this._rightElbow = .25;
         this._leftDirection = true;
         this._rightDirection = true;
+        this._jumping = false;
+        this._baselineY = y;
 
         let image = new Image()
         image.src = img;
@@ -68,6 +73,23 @@ class Person{
         //let lowerLeg = 100;
         let bodyLength = 100;
         let legSpeed = APPENDAGE_SPEED;
+
+        if(this._jumping){
+            //if(JUMP_FRAMES > 30) this._jumping = false;
+            //if()
+            // if(this._y >= this._baselineY){
+            //     this._y = this._baselineY;
+            //     this._jumping = false;
+            // }
+
+            this._y -= JUMP_VELOCITY - GRAVITY * JUMP_FRAMES;
+
+        }
+
+        if(this._y >= this._baselineY){
+            this._y = this._baselineY;
+            this._jumping = false;
+        }
 
         if(this._running === true){
 
@@ -268,6 +290,16 @@ class Person{
         ctx.stroke();
 
     }
+
+    jump(){
+        if(!this._jumping){
+            JUMP_FRAMES = 0;
+            this._jumping = true;            
+        }
+        // JUMP_FRAMES = 0;
+        // this._jumping = true;
+
+    }
 }
 
 class Dash{
@@ -395,7 +427,7 @@ class Hill{
     constructor(x){
         this._x = x;
         this._radius = 50 + Math.random() * 100;
-        this._y = can.height / 2 + (Math.random() * this._radius); 
+        this._y = can.height / 2 + (Math.random() * this._radius * .5); 
         this._color = "#00a551";
     }
 
@@ -416,7 +448,7 @@ class Hill{
         if(this._x <= -this._radius){
             this._radius = 50 + Math.random() * 100;
             this._x = can.width + this._radius * 1.5;
-            this._y = can.height / 2 + (Math.random() * this._radius);
+            this._y = can.height / 2 + (Math.random() * this._radius * .5);
             
         }else this._x -= velocity / FPS;
 
@@ -459,6 +491,8 @@ let cloud4 = new Cloud(1200, can.height / 6, 20, "white");
 let cloud5 = new Cloud(1500, can.height / 6, 20, "white");
 
 let hill1 = new Hill(350);
+let hill2 = new Hill(750);
+let hill3 = new Hill(1100);
 
 
 document.addEventListener("keydown", keydown);
@@ -470,10 +504,11 @@ function keydown(/** @type {keyboarkdEvent}*/ev){
         case 37: //Left Arrow
             break;
         case 38: //Up Arrow
+            eddy.jump();
             break;
         case 39: //Right Arrow
-        eddy._running = true;
-        console.log(eddy._leftFoot);
+            eddy._running = true;
+            console.log(eddy._leftFoot);
             break;
 
     }
@@ -517,6 +552,8 @@ function update(){
         cloud4.move(CLOUD_SPEED);
         cloud5.move(CLOUD_SPEED);
         hill1.move(TOPO_SPEED);
+        hill2.move(TOPO_SPEED);
+        hill3.move(TOPO_SPEED);
 
     }
 
@@ -533,6 +570,8 @@ function update(){
     cloud4.draw();
     cloud5.draw();
     hill1.draw();
+    hill2.draw();
+    hill3.draw();
 
     // ctx.fillStyle = "yellow";
     // ctx.fillRect(0, can.height / 1.5 + can.height / 12, 150, 20);
@@ -560,6 +599,8 @@ function update(){
 
     // eddy.draw(0, 0, 300, 500, 2, 2);
     eddy.draw(0, 0, 300, 500, 2, 2);
+
+    JUMP_FRAMES++;
 
 
 }
