@@ -18,8 +18,9 @@ function toRadians(deg){
 
 class Person{
 
-    constructor(img, x, y){
+    constructor(img, x, y,sadImg){
         this.src = img;
+        this.sadSrc = sadImg;
         this._x = x;
         this._y = y;
         this._running = false;
@@ -37,6 +38,10 @@ class Person{
         let image = new Image()
         image.src = img;
         image.onload = function(){ctx.drawImage(image, x, y)}
+
+        let sadImage = new Image()
+        sadImage.src = sadImg;
+        sadImage.onload = function(){ctx.drawImage(sadImage, x, y)}
         
         this._image = image;
         
@@ -293,26 +298,89 @@ class Cloud{
         this._y = y; 
         this._color = color;
         this._radius = radius;
+        this._shape = Math.floor(Math.random() * 4);
     }
 
     draw(){
  
+        if(this._shape === 0){
+            ctx.fillStyle = this._color;
+            ctx.beginPath()
+            ctx.arc(this._x, this._y, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x + this._radius, this._y, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x + this._radius * 1.5, this._y + this._radius, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x + this._radius * .5, this._y + this._radius * 1.5, this._radius, 0, 2 * Math.PI, false);
 
-        ctx.fillStyle = this._color;
-        ctx.beginPath()
-        ctx.arc(this._x, this._y, this._radius, 0, 2 * Math.PI, false);
-        ctx.arc(this._x + this._radius, this._y, this._radius, 0, 2 * Math.PI, false);
-        ctx.arc(this._x + this._radius * 1.5, this._y + this._radius, this._radius, 0, 2 * Math.PI, false);
-        ctx.arc(this._x + this._radius * .5, this._y + this._radius * 1.5, this._radius, 0, 2 * Math.PI, false);
+            ctx.closePath();
+            ctx.fill()
 
-        ctx.closePath();
-        ctx.fill()
+        }else if(this._shape === 1){
+            ctx.fillStyle = this._color;
+            ctx.beginPath()
+            ctx.arc(this._x, this._y, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x + this._radius, this._y, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x + this._radius * 1.5, this._y + this._radius, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x + this._radius * .5, this._y + this._radius * 1.5, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius, this._y + this._radius * 1.5, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius, this._y, this._radius, 0, 2 * Math.PI, false);
+
+
+            ctx.closePath();
+            ctx.fill()
+
+        }else if(this._shape === 2){
+            ctx.fillStyle = this._color;
+            ctx.beginPath()
+            ctx.arc(this._x, this._y, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x + this._radius, this._y, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x + this._radius * 1.5, this._y + this._radius, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x + this._radius * .5, this._y + this._radius * 1.5, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius, this._y + this._radius * 1.5, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius, this._y, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius * 1.1, this._y + this._radius * 1.5, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius * 1.3, this._y + this._radius * 1, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius * 2, this._y + this._radius * 1.2, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius * 2.2, this._y + this._radius * .7, this._radius, 0, 2 * Math.PI, false);
+
+
+            ctx.closePath();
+            ctx.fill()
+
+        }else if(this._shape === 3){
+            ctx.fillStyle = this._color;
+            ctx.beginPath()
+            ctx.arc(this._x, this._y, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x + this._radius, this._y, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x + this._radius * 1.5, this._y + this._radius, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x + this._radius * .5, this._y + this._radius * 1.5, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius, this._y + this._radius * 1.5, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius, this._y, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius * 1.1, this._y + this._radius * 1.5, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius * 1.3, this._y + this._radius * 1, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius * 2, this._y + this._radius * 1.2, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius * 2.2, this._y + this._radius * .7, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius * 3.3, this._y + this._radius * 1.2, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius, this._y - this._radius * .3, this._radius, 0, 2 * Math.PI, false);
+            ctx.arc(this._x - this._radius * 2.8, this._y - this._radius * .3, this._radius, 0, 2 * Math.PI, false);
+
+
+            ctx.closePath();
+            ctx.fill()
+        }
+
+        
+        
     }
 
     move(velocity){
-        if(this._x <= -this._width){
-            this._x = can.width;
+
+        if(this._x <= -this._radius * 3){
+            this._x = can.width + this._radius * 5;
         }else this._x -= velocity / FPS;
+
+        // if(this._x <= -this._width){
+        //     this._x = can.width;
+        // }else this._x -= velocity / FPS;
     }
 
 }
@@ -333,7 +401,10 @@ let dash4 = new Dash(900, can.height / 1.5 + can.height / 12, 150, 20, "yellow",
 let dash5 = new Dash(1200, can.height / 1.5 + can.height / 12, 150, 20, "yellow", dash4);
 let dash6 = new Dash(1500, can.height / 1.5 + can.height / 12, 150, 20, "yellow", dash5);
 
-let cloud1 = new Cloud(600, can.height / 3, 20, "white");
+let cloud1 = new Cloud(300, can.height / 8, 20, "white");
+let cloud2 = new Cloud(600, can.height / 3, 23, "white");
+let cloud3 = new Cloud(900, can.height / 6, 20, "white");
+
 
 document.addEventListener("keydown", keydown);
 document.addEventListener("keyup", keyup);
@@ -385,6 +456,9 @@ function update(){
         dash4.move(60);
         dash5.move(60);
         dash6.move(60);
+        cloud1.move(10);
+        cloud2.move(10);
+        cloud3.move(10);
 
     }
 
@@ -396,6 +470,8 @@ function update(){
     dash5.draw();
     dash6.draw();
     cloud1.draw();
+    cloud2.draw();
+    cloud3.draw();
 
     // ctx.fillStyle = "yellow";
     // ctx.fillRect(0, can.height / 1.5 + can.height / 12, 150, 20);
