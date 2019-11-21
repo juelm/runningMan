@@ -1,18 +1,20 @@
 
 
-
-
 const FPS = 30;
 const BODY_WIDTH = 3;
-const CLOUD_SPEED = 60;
+const CLOUD_SPEED = 40;
+const TOPO_SPEED = 40;
 const DASH_SPEED = 100;
-const APPENDAGE_SPEED = .025;
+const APPENDAGE_SPEED = .035;
+
 
 let can = document.getElementById("gameCanvas");
 let ctx = can.getContext("2d");
 
 let width = can.width = window.innerWidth - 20;
 let height = can.height = window.innerHeight - 20;
+
+const DASH_Y = can.height / 1.3 + can.height / 12;
 
 function toRadians(deg){
     return ((deg / 180) * Math.PI);
@@ -371,8 +373,6 @@ class Cloud{
             ctx.fill()
         }
 
-        
-        
     }
 
     move(velocity){
@@ -391,27 +391,74 @@ class Cloud{
 
 }
 
+class Hill{
+    constructor(x){
+        this._x = x;
+        this._radius = 50 + Math.random() * 100;
+        this._y = can.height / 2 + (Math.random() * this._radius); 
+        this._color = "#00a551";
+    }
+
+    draw(){
+
+        ctx.fillStyle = "#00a551";
+        ctx.beginPath();
+        ctx.arc(this._x, this._y, this._radius, -.15, .15, true);
+        ctx.fill();
+
+    // ctx.fillStyle = "#00a551";
+    // ctx.beginPath()
+    // ctx.arc(300,can.height / 2, 50, -.15, .15, true);
+    // ctx.fill()
+    }
+
+    move(velocity){
+        if(this._x <= -this._radius){
+            this._radius = 50 + Math.random() * 100;
+            this._x = can.width + this._radius * 1.5;
+            this._y = can.height / 2 + (Math.random() * this._radius);
+            
+        }else this._x -= velocity / FPS;
+
+    }
+
+}
+
+
+
+
+
+//-------------------------------------END CLASSES------------------------------------------
+
+
+
+
+
+
+
 
 // let image = new Image()
 // image.src = "../eddy.jpg";
 // image.onload = function(){ctx.drawImage(image, 50, 50)}
 
-let eddy = new Person("../eddy.jpg", 100, 200, "../unhappyEddy.jpg");
+let eddy = new Person("../eddy.jpg", 100, 300, "../unhappyEddy.jpg");
 eddy._image.onload
 eddy.draw(0, 0, 300, 500, 2, 2);
 
-let dash1 = new Dash(0, can.height / 1.5 + can.height / 12, 150, 20, "yellow");
-let dash2 = new Dash(300, can.height / 1.5 + can.height / 12, 150, 20, "yellow", dash1);
-let dash3 = new Dash(600, can.height / 1.5 + can.height / 12, 150, 20, "yellow", dash2);
-let dash4 = new Dash(900, can.height / 1.5 + can.height / 12, 150, 20, "yellow", dash3);
-let dash5 = new Dash(1200, can.height / 1.5 + can.height / 12, 150, 20, "yellow", dash4);
-let dash6 = new Dash(1500, can.height / 1.5 + can.height / 12, 150, 20, "yellow", dash5);
+let dash1 = new Dash(0, DASH_Y, 150, 20, "yellow");
+let dash2 = new Dash(300, DASH_Y, 150, 20, "yellow", dash1);
+let dash3 = new Dash(600, DASH_Y, 150, 20, "yellow", dash2);
+let dash4 = new Dash(900, DASH_Y, 150, 20, "yellow", dash3);
+let dash5 = new Dash(1200, DASH_Y, 150, 20, "yellow", dash4);
+let dash6 = new Dash(1500, DASH_Y, 150, 20, "yellow", dash5);
 
 let cloud1 = new Cloud(300, can.height / 8, 20, "white");
 let cloud2 = new Cloud(600, can.height / 3, 23, "white");
 let cloud3 = new Cloud(900, can.height / 6, 20, "white");
 let cloud4 = new Cloud(1200, can.height / 6, 20, "white");
 let cloud5 = new Cloud(1500, can.height / 6, 20, "white");
+
+let hill1 = new Hill(350);
 
 
 document.addEventListener("keydown", keydown);
@@ -454,7 +501,7 @@ function update(){
     ctx.fillRect(0, can.height / 2, can.width, can.height / 2);
 
     ctx.fillStyle = "Gray";
-    ctx.fillRect(0, can.height / 1.5, can.width, can.height / 6);
+    ctx.fillRect(0, can.height / 1.3, can.width, can.height / 5.5);
 
     //let dash1 = new Dash(0, can.height / 1.5 + can.height / 12, 150, 20, "yellow");
     if(eddy._running){
@@ -469,6 +516,7 @@ function update(){
         cloud3.move(CLOUD_SPEED);
         cloud4.move(CLOUD_SPEED);
         cloud5.move(CLOUD_SPEED);
+        hill1.move(TOPO_SPEED);
 
     }
 
@@ -484,6 +532,7 @@ function update(){
     cloud3.draw();
     cloud4.draw();
     cloud5.draw();
+    hill1.draw();
 
     // ctx.fillStyle = "yellow";
     // ctx.fillRect(0, can.height / 1.5 + can.height / 12, 150, 20);
@@ -503,10 +552,10 @@ function update(){
 
 
 
-    ctx.fillStyle = "#00a551";
-    ctx.beginPath()
-    ctx.arc(300,can.height / 2, 50, -.15, .15, true);
-    ctx.fill()
+    // ctx.fillStyle = "#00a551";
+    // ctx.beginPath()
+    // ctx.arc(300,can.height / 2, 50, -.15, .15, true);
+    // ctx.fill()
 
 
     // eddy.draw(0, 0, 300, 500, 2, 2);
