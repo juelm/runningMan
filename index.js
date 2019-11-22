@@ -13,6 +13,11 @@ const JUMP_VELOCITY = 60;
 
 let can = document.getElementById("gameCanvas");
 let ctx = can.getContext("2d");
+let faceCan = document.getElementById("faceCanvas");
+let faceCtx = faceCan.getContext("2d");
+
+// faceCtx.fillStyle = "Yellow";
+// faceCtx.fillRect(0, 0, faceCan.width, faceCan.height);
 
 let width = can.width = window.innerWidth - 20;
 let height = can.height = window.innerHeight - 20;
@@ -47,14 +52,37 @@ class Person{
 
         let image = new Image()
         image.src = img;
-        image.onload = function(){ctx.drawImage(image, x, y)}
+        image.onload = function(){faceCtx.drawImage(image,0,0,300,500,0,25,faceCan.width, faceCan.height)}
 
         let sadImage = new Image()
         sadImage.src = sadImg;
-        sadImage.onload = function(){ctx.drawImage(sadImage, x, y)}
         
         this._image = image;
+        faceCtx.drawImage(image,0,0);
+
+        // faceCtx.fillStyle = "Yellow";
+        // faceCtx.fillRect(0, 0, faceCan.width, faceCan.height);
+
+        this._face = faceCan;
         
+    }
+
+    emote(emotion){
+        let image = new Image();
+        image.onload = function(){faceCtx.drawImage(image,0,0,300,500,0,25,faceCan.width, faceCan.height)};
+        if(emotion === "sad"){
+            image.src = this.sadSrc;
+            //image.onload = function(){faceCtx.drawImage(image,0,0,300,500,0,25,faceCan.width, faceCan.height)};
+            faceCtx.clearRect(0, 0, this._face.width, this._face.height);
+            faceCtx.drawImage(image,0,40);
+        }
+        else {
+            image.src = this.src;
+            //image.onload = function(){faceCtx.drawImage(image,0,0,300,500,0,25,faceCan.width, faceCan.height)};
+            faceCtx.clearRect(0, 0, this._face.width, this._face.height);
+            faceCtx.drawImage(image,0,0);
+        }
+
     }
 
     move(newX, newY){
@@ -146,13 +174,13 @@ class Person{
         }
 
         //draw head
-        ctx.drawImage(this._image, left, top, width, height, this._x, this._y, width / scaleX, height / scaleY);
-        
+        //ctx.drawImage(this._image, this._x - (width / scaleX / 2), this._y - (height), width, height, this._x - width / 5, this._y - height, width / scaleX, height / scaleY);
+        ctx.drawImage(this._face, this._x - this._face.width / 2, this._y - this._face.height)
         // draw body
         ctx.strokeStyle = "white";
         ctx.lineWidth = bodyWidth;
-        let currentX = this._x + (width / scaleX) * 0.5;
-        let currentY = this._y + (height / scaleY) - (height - (height / scaleY)) / 6;
+        let currentX = this._x; // + (width / scaleX) * 0.5;
+        let currentY = this._y ;//+ (height / scaleY) - (height - (height / scaleY)) / 6;
         let previousX;
         let previousY;
 
@@ -296,8 +324,6 @@ class Person{
             JUMP_FRAMES = 0;
             this._jumping = true;            
         }
-        // JUMP_FRAMES = 0;
-        // this._jumping = true;
 
     }
 }
@@ -456,6 +482,23 @@ class Hill{
 
 }
 
+class Obstacle{
+    constructor(x, y, height, width){
+        this.x = x;
+        this.y = y;
+        this.height = height;
+        this.width = width;
+    }
+
+    draw(){
+        ctx.fillStyle = "purple";
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+
+    }
+
+}
+
+
 
 
 
@@ -473,9 +516,6 @@ class Hill{
 // image.src = "../eddy.jpg";
 // image.onload = function(){ctx.drawImage(image, 50, 50)}
 
-let eddy = new Person("../eddy.jpg", 100, 300, "../unhappyEddy.jpg");
-eddy._image.onload
-eddy.draw(0, 0, 300, 500, 2, 2);
 
 let dash1 = new Dash(0, DASH_Y, 150, 20, "yellow");
 let dash2 = new Dash(300, DASH_Y, 150, 20, "yellow", dash1);
@@ -493,6 +533,11 @@ let cloud5 = new Cloud(1500, can.height / 6, 20, "white");
 let hill1 = new Hill(350);
 let hill2 = new Hill(750);
 let hill3 = new Hill(1100);
+let obstacle1 = new Obstacle(750, can.height / 1.3, 170, 30);
+
+let eddy = new Person("../eddy.jpg", 100, 500, "../unhappyEddy.jpg");
+eddy._image.onload
+eddy.draw(0, 0, 300, 500, 2, 2);
 
 
 document.addEventListener("keydown", keydown);
@@ -538,6 +583,8 @@ function update(){
     ctx.fillStyle = "Gray";
     ctx.fillRect(0, can.height / 1.3, can.width, can.height / 5.5);
 
+
+
     //let dash1 = new Dash(0, can.height / 1.5 + can.height / 12, 150, 20, "yellow");
     if(eddy._running){
         dash1.move(DASH_SPEED, dash6);
@@ -572,6 +619,7 @@ function update(){
     hill1.draw();
     hill2.draw();
     hill3.draw();
+    obstacle1.draw();
 
     // ctx.fillStyle = "yellow";
     // ctx.fillRect(0, can.height / 1.5 + can.height / 12, 150, 20);
@@ -595,10 +643,11 @@ function update(){
     // ctx.beginPath()
     // ctx.arc(300,can.height / 2, 50, -.15, .15, true);
     // ctx.fill()
-
+    //eddy.emote("sad");
 
     // eddy.draw(0, 0, 300, 500, 2, 2);
     eddy.draw(0, 0, 300, 500, 2, 2);
+    //ctx.drawImage(eddy._face,eddy._x - eddy._face.width / 2, eddy._y - eddy._face.height);
 
     JUMP_FRAMES++;
 
