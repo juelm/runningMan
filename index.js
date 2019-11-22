@@ -6,7 +6,7 @@ const CLOUD_SPEED = 40;
 const TOPO_SPEED = 40;
 const DASH_SPEED = 100;
 const APPENDAGE_SPEED = .035;
-const GRAVITY = 10;
+const GRAVITY = 5;
 let JUMP_FRAMES = 0;
 const JUMP_VELOCITY = 60;
 
