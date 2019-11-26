@@ -11,6 +11,7 @@ let JUMP_FRAMES = 0;
 const JUMP_VELOCITY = 60;
 const EDDY_BOOST = 1;
 let LOSS_FRAMES = 0;
+let WIN_FRAMES = 0;
 
 
 let can = document.getElementById("gameCanvas");
@@ -54,6 +55,7 @@ class Person{
         this._jumping = false;
         this._baselineY = y;
         this._lost = false;
+        this._won = false;
 
         let image = new Image()
         image.src = img;
@@ -108,6 +110,13 @@ class Person{
 
     }
 
+    win(){
+        this._won = true;
+        TOPO_SPEED = 0;
+        DASH_SPEED = 0;
+        CLOUD_SPEED = 0;
+    }
+
     move(newX, newY){
         this._x = newX;
         this._y = newY;
@@ -124,6 +133,8 @@ class Person{
         //let lowerLeg = 100;
         let bodyLength = 100;
         let legSpeed = APPENDAGE_SPEED;
+
+        if(this._lost || this._won) this._running = false;
 
         if(this._jumping){
             //if(JUMP_FRAMES > 30) this._jumping = false;
@@ -194,6 +205,17 @@ class Person{
                 this._leftElbow = 1.25;
                 this._rightShoulder = 0;
                 this._rightElbow = 1.75;
+
+            }else if(this._won){
+                this._leftFoot = .26;
+                this._leftKnee = .26;
+                this._rightFoot = .74;
+                this._rightKnee = .74;
+                this._leftShoulder = 1.75;
+                this._leftElbow = 1.75;
+                this._rightShoulder = 1.25;
+                this._rightElbow = 1.25;
+
             }else{
                 this._leftFoot = .26;
                 this._leftKnee = .26;
@@ -521,7 +543,7 @@ class Dog{
         
         ctx.drawImage(this._face, this._x + this.bodyRadX - 35, this._y - this._face.height)
         
-        ctx.fillStyle = "#A36F40";;
+        ctx.fillStyle = "#A36F40";
         ctx.beginPath()
         ctx.ellipse(this._x, this._y, this.bodyRadX, this.bodyRadY, 0, 2 * Math.PI, false);
         //ctx.arc(this._x, this._y, 50, 0, 2 * Math.PI, false);
@@ -1012,7 +1034,8 @@ function update(){
     }
 
     if(eddy._x >= moose._x - moose.bodyRadX){
-        eddy.jump();
+        moose._running = false;
+        eddy.win();
     }
 
     if(eddy._x <= faceCan.width * 1.5){
@@ -1024,7 +1047,10 @@ function update(){
     if(eddy._lost && LOSS_FRAMES > 45){
         eddy.jump();
     }
-    console.log(JUMP_FRAMES);
+
+    if(eddy._won && WIN_FRAMES < 60){
+        eddy.jump();
+    }
 
     dash1.move(DASH_SPEED, dash6);
     dash2.move(DASH_SPEED);
@@ -1091,6 +1117,7 @@ function update(){
     JUMP_FRAMES++;
 
     if(eddy._lost) LOSS_FRAMES++;
+    if(eddy._won) WIN_FRAMES++;
 
 
 }
