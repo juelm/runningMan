@@ -52,6 +52,8 @@ class Person{
         this._rightElbow = .26;
         this._leftDirection = true;
         this._rightDirection = true;
+        this._lowerLeftDirection = true;
+        this._lowerRightDirection = true;
         this._jumping = false;
         this._baselineY = y;
         this._lost = false;
@@ -133,6 +135,10 @@ class Person{
         //let lowerLeg = 100;
         let bodyLength = 100;
         let legSpeed = APPENDAGE_SPEED;
+        let leftLegSpeed = APPENDAGE_SPEED;
+        let rightLegSpeed = APPENDAGE_SPEED;
+        let leftLowerLegSpeed = 0;
+        let rightLowerLegSpeed = APPENDAGE_SPEED * 2;
 
         if(this._lost || this._won) this._running = false;
 
@@ -158,40 +164,93 @@ class Person{
             this._rightElbow = 1.85;
             this._leftElbow = 1.85;
 
-            this._leftKnee = .75;
+            //this._leftKnee = .75;
 
-            if(this._leftFoot >= .75 || this._leftFoot <= .25) {
-                this._leftDirection = !this._leftDirection;
+            if(this._leftFoot >= .75) {
+                leftLegSpeed = 0;
+                leftLowerLegSpeed = APPENDAGE_SPEED * 2;
+                this._leftKnee += legSpeed;
+                if(this._leftKnee >= 1){
+                     this._leftDirection = !this._leftDirection;
+                     leftLegSpeed = APPENDAGE_SPEED;
+                     leftLowerLegSpeed = 0;
+                }
                 
             }
+
+            if(this._leftFoot <= .25) {
+                leftLegSpeed = 0;
+                leftLowerLegSpeed = APPENDAGE_SPEED * 2;
+                this._leftKnee -= legSpeed;
+                if(this._leftKnee <= .25) {
+                    this._leftDirection = !this._leftDirection;
+                    leftLegSpeed = APPENDAGE_SPEED;
+                    this._leftKnee = this._leftFoot;
+                }
+                
+            }
+
 
             if(this._leftDirection) {
-                this._leftFoot += legSpeed;
-                this._leftShoulder += legSpeed;
-                // if(this._leftFoot > .5){
-                //     this._leftKnee += legSpeed;
-                // }
+                this._leftFoot += leftLegSpeed;
+                this._leftShoulder += leftLegSpeed;
+                this._leftKnee += leftLegSpeed;
+
             }
             else {
-                this._leftFoot -= legSpeed;
-                this._leftShoulder -= legSpeed;
+                this._leftFoot -= leftLegSpeed;
+                this._leftShoulder -= leftLegSpeed;
             }
 
+// _______________________MAKE RIGHT
 
-            if(this._rightFoot >= .75 || this._rightFoot <= .25) this._rightDirection = !this._rightDirection;
+            if(this._rightFoot >= .75) {
+                rightLegSpeed = 0;
+                rightLowerLegSpeed = APPENDAGE_SPEED * 2;
+                this._rightKnee += legSpeed;
+                if(this._rightKnee >= 1){
+                     this._rightDirection = !this._rightDirection;
+                     rightLegSpeed = APPENDAGE_SPEED;
+                     rightLowerLegSpeed = 0;
+                }
+                
+            }
+
+            if(this._rightFoot <= .25) {
+                rightLegSpeed = 0;
+                rightLowerLegSpeed = APPENDAGE_SPEED * 2;
+                this._rightKnee -= legSpeed;
+                if(this._rightKnee <= .25) {
+                    this._rightDirection = !this._rightDirection;
+                    rightLegSpeed = APPENDAGE_SPEED;
+                    this._rightKnee = this._rightFoot;
+                }
+                
+            }
+
 
             if(this._rightDirection) {
-                this._rightFoot -= legSpeed;
-                this._rightShoulder -= legSpeed;
+                this._rightFoot += rightLegSpeed;
+                this._rightShoulder += rightLegSpeed;
+                this._rightKnee += rightLegSpeed;
+
             }
             else {
-                this._rightFoot += legSpeed;
-                this._rightShoulder += legSpeed;
+                this._rightFoot -= rightLegSpeed;
+                this._rightShoulder -= rightLegSpeed;
             }
 
-            // if(this._leftShoulder >= .75 || this._leftShoulder <= .25) {
-            //     this._leftDirection = !this._leftDirection;
-                
+
+
+            // if(this._rightFoot >= .75 || this._rightFoot <= .25) this._rightDirection = !this._rightDirection;
+
+            // if(this._rightDirection) {
+            //     this._rightFoot -= legSpeed;
+            //     this._rightShoulder -= legSpeed;
+            // }
+            // else {
+            //     this._rightFoot += legSpeed;
+            //     this._rightShoulder += legSpeed;
             // }
 
 
