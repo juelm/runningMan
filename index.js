@@ -2,19 +2,24 @@
 
 const FPS = 30;
 const BODY_WIDTH = 3;
-const CLOUD_SPEED = 40;
-const TOPO_SPEED = 40;
-const DASH_SPEED = 100;
+let CLOUD_SPEED = 40;
+let TOPO_SPEED = 40;
+let DASH_SPEED = 100;
 const APPENDAGE_SPEED = .035;
 const GRAVITY = 5;
 let JUMP_FRAMES = 0;
 const JUMP_VELOCITY = 60;
+const EDDY_BOOST = 1;
+let LOSS_FRAMES = 0;
+let WIN_FRAMES = 0;
 
 
 let can = document.getElementById("gameCanvas");
 let ctx = can.getContext("2d");
 let faceCan = document.getElementById("faceCanvas");
 let faceCtx = faceCan.getContext("2d");
+let mooseCan = document.getElementById("mooseCanvas");
+let mooseCtx = mooseCan.getContext("2d");
 
 // faceCtx.fillStyle = "Yellow";
 // faceCtx.fillRect(0, 0, faceCan.width, faceCan.height);
@@ -37,18 +42,20 @@ class Person{
         this._x = x;
         this._y = y;
         this._running = false;
-        this._leftFoot = .25;
-        this._leftKnee = .25;
-        this._rightKnee = .75;
-        this._rightFoot = .75;
-        this._leftShoulder = .25;
-        this._leftElbow = .75;
-        this._rightShoulder = .75;
-        this._rightElbow = .25;
+        this._leftFoot = .26;
+        this._leftKnee = .26;
+        this._rightKnee = .74;
+        this._rightFoot = .74;
+        this._leftShoulder = .26;
+        this._leftElbow = .74;
+        this._rightShoulder = .74;
+        this._rightElbow = .26;
         this._leftDirection = true;
         this._rightDirection = true;
         this._jumping = false;
         this._baselineY = y;
+        this._lost = false;
+        this._won = false;
 
         let image = new Image()
         image.src = img;
@@ -85,12 +92,37 @@ class Person{
 
     }
 
+    lose(){
+        this._lost = true;
+        this.emote("sad");
+        TOPO_SPEED = 0;
+        DASH_SPEED = 0;
+        CLOUD_SPEED = 0;
+        this._baselineY = 5000;
+        this._leftFoot = .26;
+        this._leftKnee = .26;
+        this._rightFoot = .74;
+        this._rightKnee = .74;
+        this._leftShoulder = 1;
+        this._leftElbow = 1.25;
+        this._rightShoulder = 0;
+        this._rightElbow = 1.75;
+
+    }
+
+    win(){
+        this._won = true;
+        TOPO_SPEED = 0;
+        DASH_SPEED = 0;
+        CLOUD_SPEED = 0;
+    }
+
     move(newX, newY){
         this._x = newX;
         this._y = newY;
     }
 
-    draw(left, top, width, height, scaleX, scaleY){
+    draw(){
 
         let bodyWidth = 3;
         let neckLength = 30;
@@ -101,6 +133,8 @@ class Person{
         //let lowerLeg = 100;
         let bodyLength = 100;
         let legSpeed = APPENDAGE_SPEED;
+
+        if(this._lost || this._won) this._running = false;
 
         if(this._jumping){
             //if(JUMP_FRAMES > 30) this._jumping = false;
@@ -121,8 +155,8 @@ class Person{
 
         if(this._running === true){
 
-            this._rightElbow = 1.75;
-            this._leftElbow = 1.75;
+            this._rightElbow = 1.85;
+            this._leftElbow = 1.85;
 
             this._leftKnee = .75;
 
@@ -162,14 +196,38 @@ class Person{
 
 
         }else{
-            this._leftFoot = .25;
-            this._leftKnee = .25;
-            this._rightFoot = .75;
-            this._rightKnee = .75;
-            this._leftShoulder = .25;
-            this._leftElbow = .75;
-            this._rightShoulder = .75;
-            this._rightElbow = .25;
+            if(this._lost){
+                this._leftFoot = .26;
+                this._leftKnee = .26;
+                this._rightFoot = .74;
+                this._rightKnee = .74;
+                this._leftShoulder = 1;
+                this._leftElbow = 1.25;
+                this._rightShoulder = 0;
+                this._rightElbow = 1.75;
+
+            }else if(this._won){
+                this._leftFoot = .26;
+                this._leftKnee = .26;
+                this._rightFoot = .74;
+                this._rightKnee = .74;
+                this._leftShoulder = 1.75;
+                this._leftElbow = 1.75;
+                this._rightShoulder = 1.25;
+                this._rightElbow = 1.25;
+
+            }else{
+                this._leftFoot = .26;
+                this._leftKnee = .26;
+                this._rightFoot = .74;
+                this._rightKnee = .74;
+                this._leftShoulder = .26;
+                this._leftElbow = .74;
+                this._rightShoulder = .74;
+                this._rightElbow = .26;
+
+            }
+
             
         }
 
@@ -326,6 +384,370 @@ class Person{
         }
 
     }
+}
+
+class Dog{
+
+    constructor(img, x, y,sadImg){
+        this.src = img;
+        this.sadSrc = sadImg;
+        this._x = x;
+        this._y = y;
+        this._running = false;
+        this._leftFoot = .26;
+        this._leftKnee = .26;
+        this._rightKnee = .74;
+        this._rightFoot = .74;
+        this._leftShoulder = .26;
+        this._leftElbow = 1;
+        this._rightShoulder = 1;
+        this._rightElbow = 1;
+        this._leftDirection = true;
+        this._rightDirection = true;
+        this._jumping = false;
+        this._baselineY = y;
+        this.bodyRadX = 100;
+        this.bodyRadY = 40;
+
+        let image = new Image()
+        image.src = img;
+        image.onload = function(){mooseCtx.drawImage(image,0,0,1000,1500,0,50,mooseCan.width * 1.3, mooseCan.height * 1.3)}
+
+        let sadImage = new Image()
+        sadImage.src = sadImg;
+        
+        this._image = image;
+        mooseCtx.drawImage(image,0,0,1000,1500,0,50,mooseCan.width * 1.3, mooseCan.height * 1.3);
+
+        // faceCtx.fillStyle = "Yellow";
+        // faceCtx.fillRect(0, 0, faceCan.width, faceCan.height);
+
+        this._face = mooseCan;
+        
+    }
+
+    // emote(emotion){
+    //     let image = new Image();
+    //     image.onload = function(){faceCtx.drawImage(image,0,0,300,500,0,25,faceCan.width, faceCan.height)};
+    //     if(emotion === "sad"){
+    //         image.src = this.sadSrc;
+    //         //image.onload = function(){faceCtx.drawImage(image,0,0,300,500,0,25,faceCan.width, faceCan.height)};
+    //         faceCtx.clearRect(0, 0, this._face.width, this._face.height);
+    //         faceCtx.drawImage(image,0,40);
+    //     }
+    //     else {
+    //         image.src = this.src;
+    //         //image.onload = function(){faceCtx.drawImage(image,0,0,300,500,0,25,faceCan.width, faceCan.height)};
+    //         faceCtx.clearRect(0, 0, this._face.width, this._face.height);
+    //         faceCtx.drawImage(image,0,0);
+    //     }
+
+    // }
+
+    move(newX, newY){
+        this._x = newX;
+        this._y = newY;
+    }
+
+    draw(){
+
+        let bodyWidth = 3;
+        let neckLength = 30;
+        let tailLength = 40;
+        let armLength = 80;
+        //let lowerArm = 100;
+        let legLength = 80;
+
+        //let lowerLeg = 100;
+        let bodyLength = 100;
+        let legSpeed = APPENDAGE_SPEED;
+
+        if(this._jumping){
+            //if(JUMP_FRAMES > 30) this._jumping = false;
+            //if()
+            // if(this._y >= this._baselineY){
+            //     this._y = this._baselineY;
+            //     this._jumping = false;
+            // }
+
+            this._y -= JUMP_VELOCITY - GRAVITY * JUMP_FRAMES;
+
+        }
+
+        if(this._y >= this._baselineY){
+            this._y = this._baselineY;
+            this._jumping = false;
+        }
+
+        if(this._running === true){
+
+            this._rightElbow = 1.75;
+            this._leftElbow = 1.75;
+
+            this._leftKnee = .75;
+
+            if(this._leftFoot >= .75 || this._leftFoot <= .25) {
+                this._leftDirection = !this._leftDirection;
+                
+            }
+
+            if(this._leftDirection) {
+                this._leftFoot += legSpeed;
+                this._leftShoulder += legSpeed;
+                // if(this._leftFoot > .5){
+                //     this._leftKnee += legSpeed;
+                // }
+            }
+            else {
+                this._leftFoot -= legSpeed;
+                this._leftShoulder -= legSpeed;
+            }
+
+
+            if(this._rightFoot >= .75 || this._rightFoot <= .25) this._rightDirection = !this._rightDirection;
+
+            if(this._rightDirection) {
+                this._rightFoot -= legSpeed;
+                this._tail -= legSpeed;
+            }
+            else {
+                this._rightFoot += legSpeed;
+                this._rightShoulder += legSpeed;
+            }
+
+            // if(this._leftShoulder >= .75 || this._leftShoulder <= .25) {
+            //     this._leftDirection = !this._leftDirection;
+                
+            // }
+
+
+        }else{
+            this._leftFoot = .26;
+            this._leftKnee = .26;
+            this._rightFoot = .74;
+            this._rightKnee = .74;
+            this._leftShoulder = .26;
+            this._leftElbow = .74;
+            this._rightShoulder = .74;
+            this._rightElbow = .26;
+            
+        }
+
+        //draw head
+        //ctx.drawImage(this._image, this._x - (width / scaleX / 2), this._y - (height), width, height, this._x - width / 5, this._y - height, width / scaleX, height / scaleY);
+        //ctx.drawImage(this._face, this._x + this.bodyRadX, this._y - this._face.height)
+        // draw body
+
+        let currentX = this._x; // + (width / scaleX) * 0.5;
+        let currentY = this._y ;//+ (height / scaleY) - (height - (height / scaleY)) / 6;
+        
+        ctx.drawImage(this._face, this._x + this.bodyRadX - 35, this._y - this._face.height)
+        
+        ctx.fillStyle = "#A36F40";
+        ctx.beginPath()
+        ctx.ellipse(this._x, this._y, this.bodyRadX, this.bodyRadY, 0, 2 * Math.PI, false);
+        //ctx.arc(this._x, this._y, 50, 0, 2 * Math.PI, false);
+
+        ctx.closePath();
+        ctx.fill()
+
+        let previousX = currentX;
+        let previousY = currentY;
+
+        ctx.strokeStyle = "#A36F40";
+        ctx.lineWidth = bodyWidth;
+
+        currentX = currentX - this.bodyRadX;
+
+        ctx.beginPath();
+        ctx.moveTo(
+            currentX,
+            currentY 
+            );
+
+        ctx.lineTo(
+            currentX - tailLength,
+            currentY 
+        );
+
+        currentX = previousX;
+
+        currentX = currentX + this.bodyRadY * Math.cos(.25 * Math.PI);
+        currentY = currentY + this.bodyRadY * Math.sin(.25 * Math.PI);
+
+        previousX = currentX;
+        previousY = currentY;
+       
+        ctx.moveTo(
+            currentX,
+            currentY
+            );
+
+        // previousX = currentX;
+        // previousY = currentY;
+
+        ctx.lineTo(      
+            currentX + legLength * Math.cos(this._rightFoot * Math.PI),
+            currentY + legLength * Math.sin(this._rightFoot * Math.PI),
+            );
+
+        currentX = previousX;
+        currentY = previousY;
+
+        ctx.moveTo(
+            currentX,
+            currentY
+            );
+
+        ctx.lineTo(      
+            currentX + legLength * Math.cos(this._leftFoot * Math.PI),
+            currentY + legLength * Math.sin(this._leftFoot * Math.PI),
+            ); 
+            
+        currentX = this._x;
+        currentY = this._y;
+            
+        ctx.moveTo(
+            currentX,
+            currentY
+            );
+
+        currentX = currentX + this.bodyRadY * Math.cos(.75 * Math.PI);
+        currentY = currentY + this.bodyRadY * Math.sin(.75 * Math.PI);
+
+        previousX = currentX;
+        previousY = currentY;
+       
+        ctx.moveTo(
+            currentX,
+            currentY
+            );
+
+        // previousX = currentX;
+        // previousY = currentY;
+
+        ctx.lineTo(      
+            currentX + legLength * Math.cos(this._rightFoot * Math.PI),
+            currentY + legLength * Math.sin(this._rightFoot * Math.PI),
+            );
+
+        currentX = previousX;
+        currentY = previousY;
+
+        ctx.moveTo(
+            currentX,
+            currentY
+            );
+
+        ctx.lineTo(      
+            currentX + armLength * Math.cos(this._leftFoot * Math.PI),
+            currentY + armLength * Math.sin(this._leftFoot * Math.PI),
+            );  
+
+
+
+        // currentX = previousX;
+        // currentY = previousY;
+
+        // ctx.moveTo(
+        //     currentX,
+        //     currentY
+        //     );
+
+        // ctx.lineTo(      
+        //     currentX + armLength * Math.cos(this._leftShoulder * Math.PI),
+        //     currentY + armLength * Math.sin(this._leftShoulder * Math.PI),
+        //     );
+
+        // currentX = currentX + armLength * Math.cos(this._leftShoulder * Math.PI);
+        // currentY = currentY + armLength * Math.sin(this._leftShoulder * Math.PI),
+
+        // ctx.moveTo(
+        //     currentX,
+        //     currentY
+        //     );   
+            
+        // ctx.lineTo(      
+        //     currentX + armLength * Math.cos(this._leftElbow * Math.PI),
+        //     currentY + armLength * Math.sin(this._leftElbow * Math.PI),
+        //     );
+
+
+        // currentX = previousX;
+        // currentY = previousY;
+
+        // ctx.moveTo(
+        //     currentX,
+        //     currentY
+        //     );
+ 
+
+        // ctx.lineTo(      
+        //     currentX,
+        //     currentY + bodyLength
+        //     );
+        
+        // currentY =  currentY + bodyLength;
+        // previousY = currentY;
+        // previousX = currentX;
+
+        // ctx.lineTo(      
+        //     currentX + legLength * Math.cos(this._rightFoot * Math.PI),
+        //     currentY + legLength * Math.sin(this._rightFoot * Math.PI),
+        //     );
+
+        // currentX = currentX + legLength * Math.cos(this._rightFoot * Math.PI);
+        // currentY = currentY + legLength * Math.sin(this._rightFoot * Math.PI);
+
+
+        // ctx.moveTo(
+        //     currentX,
+        //     currentY
+        //     );
+
+        // ctx.lineTo(      
+        //     currentX + legLength * Math.cos(this._rightKnee * Math.PI),
+        //     currentY + legLength * Math.sin(this._rightKnee * Math.PI),
+        //     );
+
+        // currentX = previousX;
+        // currentY = previousY;
+
+        // ctx.moveTo(
+        //     currentX,
+        //     currentY
+        //     );
+
+        // ctx.lineTo(      
+        //     currentX + legLength * Math.cos(this._leftFoot * Math.PI),
+        //     currentY + legLength * Math.sin(this._leftFoot * Math.PI),
+        //     );
+
+        // currentX = currentX + legLength * Math.cos(this._leftFoot * Math.PI);
+        // currentY = currentY + legLength * Math.sin(this._leftFoot * Math.PI);
+
+        // ctx.moveTo(
+        //     currentX,
+        //     currentY
+        //     );
+
+        // ctx.lineTo(      
+        //     currentX + legLength * Math.cos(this._leftKnee * Math.PI),
+        //     currentY + legLength * Math.sin(this._leftKnee * Math.PI),
+        //     );
+        
+
+        ctx.stroke();
+
+    }
+
+    // jump(){
+    //     if(!this._jumping){
+    //         JUMP_FRAMES = 0;
+    //         this._jumping = true;            
+    //     }
+
+    // }
 }
 
 class Dash{
@@ -535,10 +957,12 @@ let hill2 = new Hill(750);
 let hill3 = new Hill(1100);
 let obstacle1 = new Obstacle(750, can.height / 1.3, 170, 30);
 
-let eddy = new Person("../eddy.jpg", 100, 500, "../unhappyEddy.jpg");
+let eddy = new Person("../eddy.jpg", 350, 500, "../unhappyEddy.jpg");
 eddy._image.onload
-eddy.draw(0, 0, 300, 500, 2, 2);
+eddy.draw();
 
+let moose = new Dog('../moose.jpg', can.width -250, 675, '../moose.jpg')
+moose._running = true;
 
 document.addEventListener("keydown", keydown);
 document.addEventListener("keyup", keyup);
@@ -553,7 +977,6 @@ function keydown(/** @type {keyboarkdEvent}*/ev){
             break;
         case 39: //Right Arrow
             eddy._running = true;
-            console.log(eddy._leftFoot);
             break;
 
     }
@@ -586,23 +1009,63 @@ function update(){
 
 
     //let dash1 = new Dash(0, can.height / 1.5 + can.height / 12, 150, 20, "yellow");
-    if(eddy._running){
-        dash1.move(DASH_SPEED, dash6);
-        dash2.move(DASH_SPEED);
-        dash3.move(DASH_SPEED);
-        dash4.move(DASH_SPEED);
-        dash5.move(DASH_SPEED);
-        dash6.move(DASH_SPEED);
-        cloud1.move(CLOUD_SPEED);
-        cloud2.move(CLOUD_SPEED);
-        cloud3.move(CLOUD_SPEED);
-        cloud4.move(CLOUD_SPEED);
-        cloud5.move(CLOUD_SPEED);
-        hill1.move(TOPO_SPEED);
-        hill2.move(TOPO_SPEED);
-        hill3.move(TOPO_SPEED);
+    // if(eddy._running){
+    //     dash1.move(DASH_SPEED, dash6);
+    //     dash2.move(DASH_SPEED);
+    //     dash3.move(DASH_SPEED);
+    //     dash4.move(DASH_SPEED);
+    //     dash5.move(DASH_SPEED);
+    //     dash6.move(DASH_SPEED);
+    //     cloud1.move(CLOUD_SPEED);
+    //     cloud2.move(CLOUD_SPEED);
+    //     cloud3.move(CLOUD_SPEED);
+    //     cloud4.move(CLOUD_SPEED);
+    //     cloud5.move(CLOUD_SPEED);
+    //     hill1.move(TOPO_SPEED);
+    //     hill2.move(TOPO_SPEED);
+    //     hill3.move(TOPO_SPEED);
 
+    // }
+
+    if(eddy._running){
+        eddy.move(eddy._x += EDDY_BOOST, eddy._y);
+    }else{
+        eddy.move(eddy._x -= DASH_SPEED / FPS, eddy._y);
     }
+
+    if(eddy._x >= moose._x - moose.bodyRadX){
+        moose._running = false;
+        eddy.win();
+    }
+
+    if(eddy._x <= faceCan.width * 1.5){
+        moose._running = false;
+        //eddy._x += 50;
+        eddy.lose()
+    }
+
+    if(eddy._lost && LOSS_FRAMES > 45){
+        eddy.jump();
+    }
+
+    if(eddy._won && WIN_FRAMES < 60){
+        eddy.jump();
+    }
+
+    dash1.move(DASH_SPEED, dash6);
+    dash2.move(DASH_SPEED);
+    dash3.move(DASH_SPEED);
+    dash4.move(DASH_SPEED);
+    dash5.move(DASH_SPEED);
+    dash6.move(DASH_SPEED);
+    cloud1.move(CLOUD_SPEED);
+    cloud2.move(CLOUD_SPEED);
+    cloud3.move(CLOUD_SPEED);
+    cloud4.move(CLOUD_SPEED);
+    cloud5.move(CLOUD_SPEED);
+    hill1.move(TOPO_SPEED);
+    hill2.move(TOPO_SPEED);
+    hill3.move(TOPO_SPEED);
 
     
     dash1.draw();
@@ -619,7 +1082,8 @@ function update(){
     hill1.draw();
     hill2.draw();
     hill3.draw();
-    obstacle1.draw();
+    //obstacle1.draw();
+    
 
     // ctx.fillStyle = "yellow";
     // ctx.fillRect(0, can.height / 1.5 + can.height / 12, 150, 20);
@@ -643,13 +1107,17 @@ function update(){
     // ctx.beginPath()
     // ctx.arc(300,can.height / 2, 50, -.15, .15, true);
     // ctx.fill()
-    //eddy.emote("sad");
+// eddy.emote("sad");
 
     // eddy.draw(0, 0, 300, 500, 2, 2);
-    eddy.draw(0, 0, 300, 500, 2, 2);
+    moose.draw();
+    eddy.draw();
     //ctx.drawImage(eddy._face,eddy._x - eddy._face.width / 2, eddy._y - eddy._face.height);
 
     JUMP_FRAMES++;
+
+    if(eddy._lost) LOSS_FRAMES++;
+    if(eddy._won) WIN_FRAMES++;
 
 
 }
