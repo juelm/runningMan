@@ -124,6 +124,7 @@ class Person{
         this._y = newY;
     }
 
+
     draw(){
 
         let bodyWidth = 3;
@@ -138,28 +139,38 @@ class Person{
         let leftLegSpeed = APPENDAGE_SPEED;
         let rightLegSpeed = APPENDAGE_SPEED;
         let leftLowerLegSpeed = 0;
-        let rightLowerLegSpeed = APPENDAGE_SPEED * 2;
+        let rightLowerLegSpeed = APPENDAGE_SPEED;
 
         if(this._lost || this._won) this._running = false;
 
         if(this._jumping){
-            //if(JUMP_FRAMES > 30) this._jumping = false;
-            //if()
-            // if(this._y >= this._baselineY){
-            //     this._y = this._baselineY;
-            //     this._jumping = false;
-            // }
 
             this._y -= JUMP_VELOCITY - GRAVITY * JUMP_FRAMES;
+            this._leftFoot = 1;
+            this._leftKnee = 1;
+            this._rightFoot = 0;
+            this._rightKnee = 0;
+            this._leftShoulder = 1.25;
+            this._leftElbow = 1.25;
+            this._rightShoulder = 1.75;
+            this._rightElbow = 1.75;
+
+            if(this._y >= this._baselineY){
+                this._y = this._baselineY;
+                this._jumping = false;
+                this._leftFoot = .26;
+                this._leftKnee = .26;
+                this._rightFoot = .74;
+                this._rightKnee = .74;
+                this._leftShoulder = .26;
+                this._leftElbow = .74;
+                this._rightShoulder = .74;
+                this._rightElbow = .26;
+            }
 
         }
 
-        if(this._y >= this._baselineY){
-            this._y = this._baselineY;
-            this._jumping = false;
-        }
-
-        if(this._running === true){
+        else if(this._running === true){
 
             this._rightElbow = 1.85;
             this._leftElbow = 1.85;
@@ -168,9 +179,10 @@ class Person{
 
             if(this._leftFoot >= .75) {
                 leftLegSpeed = 0;
-                leftLowerLegSpeed = APPENDAGE_SPEED * 2;
+                leftLowerLegSpeed = APPENDAGE_SPEED;
                 this._leftKnee += legSpeed;
                 if(this._leftKnee >= 1){
+                    this._leftKnee = 1;
                      this._leftDirection = !this._leftDirection;
                      leftLegSpeed = APPENDAGE_SPEED;
                      leftLowerLegSpeed = 0;
@@ -180,8 +192,8 @@ class Person{
 
             if(this._leftFoot <= .25) {
                 leftLegSpeed = 0;
-                leftLowerLegSpeed = APPENDAGE_SPEED * 2;
-                this._leftKnee -= legSpeed;
+                leftLowerLegSpeed = APPENDAGE_SPEED * 3;
+                this._leftKnee -= leftLowerLegSpeed;
                 if(this._leftKnee <= .25) {
                     this._leftDirection = !this._leftDirection;
                     leftLegSpeed = APPENDAGE_SPEED;
@@ -190,68 +202,52 @@ class Person{
                 
             }
 
-
             if(this._leftDirection) {
                 this._leftFoot += leftLegSpeed;
                 this._leftShoulder += leftLegSpeed;
                 this._leftKnee += leftLegSpeed;
+                this._rightFoot = 1 - this._leftFoot;
+                this._rightShoulder = 1 - this._leftShoulder;
 
             }
             else {
                 this._leftFoot -= leftLegSpeed;
                 this._leftShoulder -= leftLegSpeed;
+                this._rightFoot = 1 - this._leftFoot;
+                this._rightShoulder = 1 - this._leftShoulder;
+                if(this._rightFoot <=.75) this._rightKnee = 1 - this._leftFoot;
+                else{                
+                    this._rightKnee += legSpeed;
+                    if(this._rightKnee >= 1){
+                        this._rightKnee = 1;
+                    }
+
+                }
             }
 
-// _______________________MAKE RIGHT
-
-            if(this._rightFoot >= .75) {
-                rightLegSpeed = 0;
-                rightLowerLegSpeed = APPENDAGE_SPEED * 2;
+            if(this._rightFoot >= .5) {
                 this._rightKnee += legSpeed;
                 if(this._rightKnee >= 1){
-                     this._rightDirection = !this._rightDirection;
-                     rightLegSpeed = APPENDAGE_SPEED;
-                     rightLowerLegSpeed = 0;
+                    this._rightKnee = 1;
                 }
                 
             }
 
             if(this._rightFoot <= .25) {
                 rightLegSpeed = 0;
-                rightLowerLegSpeed = APPENDAGE_SPEED * 2;
-                this._rightKnee -= legSpeed;
+                rightLowerLegSpeed = APPENDAGE_SPEED * 3;
+                this._rightKnee -= rightLowerLegSpeed;
                 if(this._rightKnee <= .25) {
-                    this._rightDirection = !this._rightDirection;
+                    //this._rightKnee = .24
+                    //this._leftDirection = !this._leftDirection;
                     rightLegSpeed = APPENDAGE_SPEED;
+                    // rightLegSpeed = APPENDAGE_SPEED;
+                    //this._rightDirection = !this._rightDirection;
+                    //rightLegSpeed = APPENDAGE_SPEED;
                     this._rightKnee = this._rightFoot;
                 }
                 
             }
-
-
-            if(this._rightDirection) {
-                this._rightFoot += rightLegSpeed;
-                this._rightShoulder += rightLegSpeed;
-                this._rightKnee += rightLegSpeed;
-
-            }
-            else {
-                this._rightFoot -= rightLegSpeed;
-                this._rightShoulder -= rightLegSpeed;
-            }
-
-
-
-            // if(this._rightFoot >= .75 || this._rightFoot <= .25) this._rightDirection = !this._rightDirection;
-
-            // if(this._rightDirection) {
-            //     this._rightFoot -= legSpeed;
-            //     this._rightShoulder -= legSpeed;
-            // }
-            // else {
-            //     this._rightFoot += legSpeed;
-            //     this._rightShoulder += legSpeed;
-            // }
 
 
         }else{
@@ -275,6 +271,17 @@ class Person{
                 this._rightShoulder = 1.25;
                 this._rightElbow = 1.25;
 
+            // }else if(this._jumping){
+            //     //this._running = false;
+            //     this._leftFoot = 1;
+            //     this._leftKnee = 1.5;
+            //     this._rightFoot = .1;
+            //     this._rightKnee = .1;
+            //     this._leftShoulder = .26;
+            //     this._leftElbow = .74;
+            //     this._rightShoulder = .2;
+            //     this._rightElbow = .2;
+
             }else{
                 this._leftFoot = .26;
                 this._leftKnee = .26;
@@ -294,7 +301,7 @@ class Person{
         //ctx.drawImage(this._image, this._x - (width / scaleX / 2), this._y - (height), width, height, this._x - width / 5, this._y - height, width / scaleX, height / scaleY);
         ctx.drawImage(this._face, this._x - this._face.width / 2, this._y - this._face.height)
         // draw body
-        ctx.strokeStyle = "white";
+        ctx.strokeStyle = "red";
         ctx.lineWidth = bodyWidth;
         let currentX = this._x; // + (width / scaleX) * 0.5;
         let currentY = this._y ;//+ (height / scaleY) - (height - (height / scaleY)) / 6;
@@ -399,7 +406,7 @@ class Person{
             currentX,
             currentY
             );
-
+            
         ctx.lineTo(      
             currentX + legLength * Math.cos(this._rightKnee * Math.PI),
             currentY + legLength * Math.sin(this._rightKnee * Math.PI),
@@ -420,6 +427,12 @@ class Person{
 
         currentX = currentX + legLength * Math.cos(this._leftFoot * Math.PI);
         currentY = currentY + legLength * Math.sin(this._leftFoot * Math.PI);
+        // ctx.stroke();
+
+        // ctx.strokeStyle = "red";
+        // ctx.lineWidth = bodyWidth;
+
+        // ctx.beginPath();
 
         ctx.moveTo(
             currentX,
@@ -602,7 +615,7 @@ class Dog{
         
         ctx.drawImage(this._face, this._x + this.bodyRadX - 35, this._y - this._face.height)
         
-        ctx.fillStyle = "#A36F40";
+        ctx.fillStyle = "#D2B48C";
         ctx.beginPath()
         ctx.ellipse(this._x, this._y, this.bodyRadX, this.bodyRadY, 0, 2 * Math.PI, false);
         //ctx.arc(this._x, this._y, 50, 0, 2 * Math.PI, false);
@@ -613,7 +626,7 @@ class Dog{
         let previousX = currentX;
         let previousY = currentY;
 
-        ctx.strokeStyle = "#A36F40";
+        ctx.strokeStyle = "#D2B48C";
         ctx.lineWidth = bodyWidth;
 
         currentX = currentX - this.bodyRadX;
@@ -704,109 +717,11 @@ class Dog{
             );  
 
 
-
-        // currentX = previousX;
-        // currentY = previousY;
-
-        // ctx.moveTo(
-        //     currentX,
-        //     currentY
-        //     );
-
-        // ctx.lineTo(      
-        //     currentX + armLength * Math.cos(this._leftShoulder * Math.PI),
-        //     currentY + armLength * Math.sin(this._leftShoulder * Math.PI),
-        //     );
-
-        // currentX = currentX + armLength * Math.cos(this._leftShoulder * Math.PI);
-        // currentY = currentY + armLength * Math.sin(this._leftShoulder * Math.PI),
-
-        // ctx.moveTo(
-        //     currentX,
-        //     currentY
-        //     );   
-            
-        // ctx.lineTo(      
-        //     currentX + armLength * Math.cos(this._leftElbow * Math.PI),
-        //     currentY + armLength * Math.sin(this._leftElbow * Math.PI),
-        //     );
-
-
-        // currentX = previousX;
-        // currentY = previousY;
-
-        // ctx.moveTo(
-        //     currentX,
-        //     currentY
-        //     );
- 
-
-        // ctx.lineTo(      
-        //     currentX,
-        //     currentY + bodyLength
-        //     );
-        
-        // currentY =  currentY + bodyLength;
-        // previousY = currentY;
-        // previousX = currentX;
-
-        // ctx.lineTo(      
-        //     currentX + legLength * Math.cos(this._rightFoot * Math.PI),
-        //     currentY + legLength * Math.sin(this._rightFoot * Math.PI),
-        //     );
-
-        // currentX = currentX + legLength * Math.cos(this._rightFoot * Math.PI);
-        // currentY = currentY + legLength * Math.sin(this._rightFoot * Math.PI);
-
-
-        // ctx.moveTo(
-        //     currentX,
-        //     currentY
-        //     );
-
-        // ctx.lineTo(      
-        //     currentX + legLength * Math.cos(this._rightKnee * Math.PI),
-        //     currentY + legLength * Math.sin(this._rightKnee * Math.PI),
-        //     );
-
-        // currentX = previousX;
-        // currentY = previousY;
-
-        // ctx.moveTo(
-        //     currentX,
-        //     currentY
-        //     );
-
-        // ctx.lineTo(      
-        //     currentX + legLength * Math.cos(this._leftFoot * Math.PI),
-        //     currentY + legLength * Math.sin(this._leftFoot * Math.PI),
-        //     );
-
-        // currentX = currentX + legLength * Math.cos(this._leftFoot * Math.PI);
-        // currentY = currentY + legLength * Math.sin(this._leftFoot * Math.PI);
-
-        // ctx.moveTo(
-        //     currentX,
-        //     currentY
-        //     );
-
-        // ctx.lineTo(      
-        //     currentX + legLength * Math.cos(this._leftKnee * Math.PI),
-        //     currentY + legLength * Math.sin(this._leftKnee * Math.PI),
-        //     );
         
 
         ctx.stroke();
 
     }
-
-    // jump(){
-    //     if(!this._jumping){
-    //         JUMP_FRAMES = 0;
-    //         this._jumping = true;            
-    //     }
-
-    // }
 }
 
 class Dash{
@@ -1110,6 +1025,8 @@ function update(){
     if(eddy._won && WIN_FRAMES < 60){
         eddy.jump();
     }
+
+    
 
     dash1.move(DASH_SPEED, dash6);
     dash2.move(DASH_SPEED);
